@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>송도사업소 견학 해설사 배치현황</title>
+<style>
+*{box-sizing:border-box} body{margin:0;background:#f5f7f8;color:#25343a;font-family:"Malgun Gothic","Noto Sans KR",sans-serif}
+.header{background:#145b50;color:#fff;padding:24px max(20px,calc((100% - 1180px)/2))}
+.header h1{margin:0 0 6px;font-size:24px} .header p{margin:0;font-size:13px;opacity:.85}
+.wrap{max-width:1180px;margin:22px auto;padding:0 14px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.controls{display:flex;align-items:center;gap:7px} button{border:1px solid #d2dcdf;background:#fff;border-radius:8px;padding:9px 13px;cursor:pointer;font-size:13px}
+.month{font-size:21px;font-weight:700;width:150px;text-align:center}
+.filter{display:flex;gap:8px;align-items:center} select{border:1px solid #d2dcdf;border-radius:8px;padding:9px 12px;background:#fff}
+.calendar{background:#fff;border:1px solid #dce4e7;border-radius:12px;overflow:hidden}
+.week,.grid{display:grid;grid-template-columns:repeat(7,1fr)} .week{background:#eef3f4}
+.week div{padding:10px;text-align:center;font-size:12px;font-weight:700;color:#56666c;border-right:1px solid #dce4e7}
+.day{min-height:132px;border-right:1px solid #e1e7e9;border-top:1px solid #e1e7e9;padding:7px;cursor:pointer}
+.day:nth-child(7n){border-right:0} .day.muted{background:#fafbfb;color:#b9c1c5;cursor:default}
+.day.today{box-shadow:inset 0 0 0 2px #287866} .num{font-weight:700;font-size:13px;margin-bottom:5px}
+.event{background:#eaf5f1;border-left:3px solid #328671;border-radius:5px;padding:5px 6px;margin:4px 0;font-size:10.5px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.event.cancel{background:#fceeee;border-left-color:#cf6060;color:#a24d4d;text-decoration:line-through}
+.more{font-size:10px;color:#718087;margin-top:3px}
+.overlay{display:none;position:fixed;inset:0;background:rgba(15,28,32,.45);z-index:20;align-items:center;justify-content:center;padding:18px}
+.modal{background:white;border-radius:14px;width:min(680px,100%);max-height:88vh;overflow:auto}
+.modalhead{padding:17px 20px;border-bottom:1px solid #e2e8e9;display:flex;justify-content:space-between;align-items:center}
+.modalhead h2{margin:0;font-size:18px} .close{font-size:22px;border:0;background:none;padding:2px 7px}
+.card{margin:14px 20px;border:1px solid #dfe6e8;border-radius:10px;padding:14px} .card.cancel{background:#fff8f8;border-color:#eccaca}
+.card h3{margin:0 0 10px;font-size:15px} .info{display:grid;grid-template-columns:105px 1fr;gap:6px 10px;font-size:13px}
+.label{color:#748188} .badge{display:inline-block;padding:3px 7px;border-radius:10px;font-size:10px;background:#edf1f2;margin-left:5px}
+.note{margin:12px 0;color:#6c7a80;font-size:12px}
+@media(max-width:700px){.header h1{font-size:19px}.day{min-height:100px;padding:5px}.event{font-size:9.5px}.month{width:120px;font-size:18px}.filter{width:100%}.filter select{width:100%}}
+</style></head>
+<body>
+<header class="header"><h1>송도사업소 견학 해설사 배치현황</h1><p>견학 일정과 담당 해설사 배치를 달력에서 확인합니다.</p></header>
+<main class="wrap">
+<div class="toolbar"><div class="controls"><button onclick="move(-1)">‹ 이전</button><div class="month" id="month"></div><button onclick="move(1)">다음 ›</button><button onclick="today()">오늘</button></div>
+<div class="filter"><span style="font-size:12px;color:#68767b">해설사</span><select id="filter" onchange="render()"><option value="">전체</option></select></div></div>
+<div class="calendar"><div class="week"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div><div class="grid" id="grid"></div></div>
+<div class="note">※ 날짜를 클릭하면 해당 날짜의 견학 상세정보와 해설사 배치를 확인할 수 있습니다.</div>
+</main>
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modalhead"><h2 id="title"></h2><button class="close" onclick="closeModal()">×</button></div><div id="body"></div></div></div>
+<script>
+const DATA=[{"sheet": "9월 배치", "구분": "1", "일시": "2026-09-07 (월)", "시간": "10:00:00", "단체명": "남인천어린이집", "신청인원": "21", "배치인원": "1", "신청자 정보": "곽선자님 \n(010-9571-6410)", "선별장": "X", "이용목적": "유아들에게 견학을 통해 환경의 중요성과 바른 자원배출에 대해 경험할 수 있는 기회제공\n5~7세 21명, 인솔교사 4명", "담당 해설사": "김영선", "date": "2026-09-07"}, {"sheet": "9월 배치", "구분": "취소", "일시": "2026-09-09 (수)", "시간": "10:00:00", "단체명": "지구환경교육센터", "신청인원": "50", "배치인원": "3", "신청자 정보": "이화신님\n(010-8774-9089)", "선별장": "X", "이용목적": "지구환경교육센터(동부교육청 소속 초등 5,6학년)에서 현장학습 / 2학급", "담당 해설사": "김금형, 신인순, 정군미", "date": "2026-09-09"}, {"sheet": "9월 배치", "구분": "2", "일시": "2026-09-11 (금)", "시간": "15:30:00", "단체명": "신송고등학교 1학년", "신청인원": "15", "배치인원": "1", "신청자 정보": "임경은님\n(010-7300-4933)", "선별장": "X", "이용목적": "고등학교 1학년 학생들 동아리 견학", "담당 해설사": "김금형", "date": "2026-09-11"}, {"sheet": "9월 배치", "구분": "3", "일시": "2026-09-14 (월)", "시간": "10:00:00", "단체명": "에이스화인유치원", "신청인원": "64", "배치인원": "3", "신청자 정보": "최주현님\n(010-6889-5517)", "선별장": "X", "이용목적": "에이스화인유치원 견학신청 (만 5세)\n햇살, 달빛 반 총 60명입니다. 인솔교사는 4명 입니다.", "담당 해설사": "김선례, 김영선, 최현우", "date": "2026-09-14"}, {"sheet": "9월 배치", "구분": "4", "일시": "2026-09-15 (화)", "시간": "11:00:00", "단체명": "에이스화인유치원", "신청인원": "65", "배치인원": "3", "신청자 정보": "최주현님\n(010-6889-5517)", "선별장": "X", "이용목적": "에이스화인유치원 만 5세 유아 견학\n하늘반 / 별빛반 총 61명 입니다. 인솔교사 4명\n11시 도착예정입니다.", "담당 해설사": "신인순, 정군미, 안명돈", "date": "2026-09-15"}, {"sheet": "9월 배치", "구분": "5", "일시": "2026-09-16 (수)", "시간": "10:00:00", "단체명": "지구환경교육센터\n(인천중앙초등학교)", "신청인원": "50", "배치인원": "3", "신청자 정보": "이화신님\n(010-8774-9089)", "선별장": "X", "이용목적": "지구환경교육센터(동부교육청 소속 초등 5,6학년)에서 현장학습 / 2학급", "담당 해설사": "김금형, 조기숙, 신인순", "date": "2026-09-16"}, {"sheet": "9월 배치", "구분": "6", "일시": "2026-09-17 (목)", "시간": "10:30:00", "단체명": "숭의유치원", "신청인원": "25", "배치인원": "2", "신청자 정보": "이보희\n(010-9996-4963)", "선별장": "X", "이용목적": "10시 30분쯤 도착 예정입니다!\n(인솔교사 2명)", "담당 해설사": "김영선, 김선례", "date": "2026-09-17"}, {"sheet": "9월 배치", "구분": "7", "일시": "2026-09-18 (금)", "시간": "14:00:00", "단체명": "광성중", "신청인원": "50", "배치인원": "3", "신청자 정보": "강난님\n(010-9327-0590)", "선별장": "X", "이용목적": "2학기 현장체험학습 프로그램의 일환으로 방문하고자 합니다.", "담당 해설사": "김금형, 신인순, 조기숙", "date": "2026-09-18"}, {"sheet": "9월 배치", "구분": "8", "일시": "2026-09-23 (수)", "시간": "10:00:00", "단체명": "세화종합사회복지관", "신청인원": "14", "배치인원": "1", "신청자 정보": "민태희님\n(010-7679-3034)", "선별장": "X", "이용목적": "환경 관련 프로그램 이용자 견학", "담당 해설사": "조기숙", "date": "2026-09-23"}, {"sheet": "9월 배치", "구분": "9", "일시": "2026-09-23 (수)", "시간": "14:30:00", "단체명": "송도고등학교", "신청인원": "25", "배치인원": "2", "신청자 정보": "문화영님\n(010-9336-0550)", "선별장": "X", "이용목적": "자원순환 학급 프로젝트 일환으로 소각관련 교육신청합니다. (2시반~3시 사이 도착예정)", "담당 해설사": "김금형, 신인순", "date": "2026-09-23"}];
+let cur=new Date(2026,8,1);
+const fields=["시간","단체명","신청인원","배치인원","담당 해설사","선별장","이용목적","인솔선생님","신청자 정보"];
+function get(e,words){let k=Object.keys(e).find(k=>words.some(w=>k.includes(w)));return k?e[k]:""}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function cancelled(e){return Object.values(e).join(" ").includes("취소")}
+function dateKey(y,m,d){return y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0")}
+function initFilter(){let names=new Set();DATA.forEach(e=>{let s=get(e,["담당 해설사"]);s.split(/[,/·]+/).map(x=>x.trim()).filter(Boolean).forEach(x=>names.add(x))});let sel=document.getElementById("filter");[...names].sort().forEach(n=>{let o=document.createElement("option");o.value=n;o.textContent=n;sel.appendChild(o)})}
+function visible(e){let f=document.getElementById("filter").value;return !f||get(e,["담당 해설사"]).includes(f)}
+function render(){
+ let y=cur.getFullYear(),m=cur.getMonth();document.getElementById("month").textContent=y+"년 "+(m+1)+"월";
+ let first=new Date(y,m,1),last=new Date(y,m+1,0),start=first.getDay(),total=Math.ceil((start+last.getDate())/7)*7;
+ let g=document.getElementById("grid");g.innerHTML="";
+ for(let i=0;i<total;i++){let d=i-start+1,cell=document.createElement("div");cell.className="day";let dt=new Date(y,m,d);
+ if(d<1||d>last.getDate()){cell.classList.add("muted");cell.innerHTML="<div class='num'>"+dt.getDate()+"</div>"}
+ else{let ds=dateKey(y,m,d),events=DATA.filter(e=>e.date===ds&&visible(e));if(dt.toDateString()===new Date().toDateString())cell.classList.add("today");
+ cell.innerHTML="<div class='num'>"+d+"</div>";events.slice(0,4).forEach(e=>{let x=document.createElement("div");x.className="event"+(cancelled(e)?" cancel":"");x.textContent=(get(e,["시간"])+" "+get(e,["단체명"])).trim();cell.appendChild(x)});if(events.length>4){let x=document.createElement("div");x.className="more";x.textContent="+ "+(events.length-4)+"건 더보기";cell.appendChild(x)}if(events.length)cell.onclick=()=>openModal(ds,events)}g.appendChild(cell)}
+}
+function openModal(ds,events){let [y,m,d]=ds.split("-").map(Number);document.getElementById("title").textContent=y+"년 "+m+"월 "+d+"일 견학 일정";let b=document.getElementById("body");b.innerHTML="";
+events.forEach((e,i)=>{let c=document.createElement("div");c.className="card"+(cancelled(e)?" cancel":"");let name=get(e,["단체명"])||("견학 일정 "+(i+1));let rows="";
+fields.forEach(f=>{let v=get(e,[f]);if(v)rows+="<div class='label'>"+f+"</div><div>"+esc(v)+"</div>"});
+c.innerHTML="<h3>"+esc(name)+(cancelled(e)?" <span class='badge'>취소</span>":"")+"</h3><div class='info'>"+rows+"</div>";b.appendChild(c)});document.getElementById("overlay").style.display="flex"}
+function closeModal(){document.getElementById("overlay").style.display="none"}
+function move(n){cur.setMonth(cur.getMonth()+n);render()}function today(){let t=new Date();cur=new Date(t.getFullYear(),t.getMonth(),1);render()}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});initFilter();render();
+</script></body></html>
